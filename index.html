@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pooh 溫書應援站</title>
+  <style>
+    :root {
+      --bg-color: #FFFDF0;
+      --card-bg: #FFFFFF;
+      --primary-red: #E63946;
+      --accent-yellow: #FFB703;
+      --honey-gold: #FB8500;
+      --text-main: #333333;
+      --text-sub: #666666;
+      --border-dash: #FFD166;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card-bg);
+      border-radius: 24px;
+      border: 4px solid #FFE6A7;
+      box-shadow: 0 10px 25px rgba(251, 133, 0, 0.1);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .header { text-align: center; }
+    .header h1 {
+      color: var(--primary-red);
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .header p { color: var(--text-sub); font-size: 0.9rem; margin-top: 4px; }
+
+    .goal-card {
+      background: #FFF9E6;
+      border: 2px dashed var(--border-dash);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+    .goal-icon { font-size: 2.5rem; margin-bottom: 4px; }
+    .goal-title { font-size: 1.05rem; font-weight: bold; color: var(--text-main); margin-bottom: 8px; }
+    .points-display { font-size: 1.3rem; font-weight: 800; color: var(--primary-red); margin-bottom: 12px; }
+
+    .progress-bar-bg {
+      background: #EAEAEA;
+      height: 18px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #FFB703, #FB8500);
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s ease;
+      border-radius: 10px;
+    }
+    .goal-subtext { font-size: 0.8rem; color: var(--text-sub); }
+
+    .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn-add {
+      background-color: var(--primary-red);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 8px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #9E2A2B;
+      transition: transform 0.1s;
+    }
+    .btn-add:active { transform: translateY(3px); box-shadow: 0 1px 0 #9E2A2B; }
+
+    .btn-reset {
+      background-color: #E0E0E0;
+      color: #666;
+      border: none;
+      border-radius: 12px;
+      padding: 10px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn-reset:hover { background-color: #D6D6D6; }
+
+    .section-title { font-size: 1.1rem; font-weight: bold; }
+
+    .reward-list { display: flex; flex-direction: column; gap: 10px; }
+    .reward-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #FAFAFA;
+      border: 1px solid #EFEFEF;
+      border-radius: 12px;
+      padding: 12px;
+      transition: all 0.3s ease;
+    }
+    .reward-item.unlocked { background: #FFF9E6; border-color: #FFD166; }
+    .reward-item.claimed { background: #E8F5E9; border-color: #A5D6A7; }
+    .reward-info { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 600; }
+    .reward-icon { font-size: 1.4rem; }
+    .reward-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: bold;
+      background-color: #DDD;
+      color: #888;
+    }
+    .reward-btn.can-claim {
+      background-color: var(--accent-yellow);
+      color: #333;
+      cursor: pointer;
+      box-shadow: 0 2px 0 #D49000;
+    }
+    .reward-btn.claimed-badge { background-color: #4CAF50; color: white; }
+
+    .save-status {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #2E7D32;
+      background: #E8F5E9;
+      padding: 6px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>🍯 Pooh 溫書應援站</h1>
+      <p>每專心一次，距離 Pooh Pooh 又近一步！</p>
+    </div>
+
+    <div class="goal-card">
+      <div class="goal-icon">🧸</div>
+      <div class="goal-title">最終目標：獲得一隻 Pooh Pooh 巨型公仔！</div>
+      <div class="points-display">
+        <span id="current-points">0</span> / 20 個 Honey 點數
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <div class="goal-subtext">（專心溫書 1 小時 = 1 個 Honey 點數）</div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-add" onclick="addPoints(0.5)">+ 0.5 小時<br>(番茄鐘)</button>
+      <button class="btn-add" onclick="addPoints(1.0)">+ 1.0 小時<br>(大成功)</button>
+    </div>
+
+    <button class="btn-reset" onclick="resetProgress()">重置進度</button>
+
+    <div class="section-title">🎁 里程碑獎勵清單</div>
+    <div class="reward-list" id="reward-list"></div>
+
+    <div class="save-status">
+      🟢 進度自動儲存中（刷新頁面不會丟失）
+    </div>
+  </div>
+
+  <script>
+    let points = 0;
+    const rewards = [
+      { id: 1, req: 5, icon: '☕', name: '5 點：獎勵特調飲品 / 甜品', claimed: false },
+      { id: 2, req: 10, icon: '💆‍♂️', name: '10 點：專屬 30 分鐘肩頸按摩', claimed: false },
+      { id: 3, req: 15, icon: '🍕', name: '15 點：任選大餐 / 放題獎勵', claimed: false },
+      { id: 4, req: 20, icon: '🧸🎉', name: '20 點：獲得全新 Pooh Pooh 公仔！', claimed: false }
+    ];
+
+    function init() {
+      try {
+        const savedPoints = localStorage.getItem('pooh_points');
+        const savedRewards = localStorage.getItem('pooh_rewards');
+        if (savedPoints !== null) points = parseFloat(savedPoints);
+        if (savedRewards !== null) {
+          const parsed = JSON.parse(savedRewards);
+          rewards.forEach((r, idx) => { if(parsed[idx] !== undefined) r.claimed = parsed[idx]; });
+        }
+      } catch(e) {}
+      render();
+    }
+
+    function save() {
+      try {
+        localStorage.setItem('pooh_points', points);
+        localStorage.setItem('pooh_rewards', JSON.stringify(rewards.map(r => r.claimed)));
+      } catch(e) {}
+    }
+
+    function render() {
+      document.getElementById('current-points').innerText = points;
+      const pct = Math.min((points / 20) * 100, 100);
+      document.getElementById('progress-fill').style.width = pct + '%';
+
+      const listEl = document.getElementById('reward-list');
+      listEl.innerHTML = '';
+
+      rewards.forEach(r => {
+        const item = document.createElement('div');
+        const isUnlocked = points >= r.req;
+        
+        item.className = `reward-item ${r.claimed ? 'claimed' : (isUnlocked ? 'unlocked' : '')}`;
+        
+        let btnHtml = `<button class="reward-btn" disabled>未解鎖</button>`;
+        if (r.claimed) {
+          btnHtml = `<button class="reward-btn claimed-badge">已兌換</button>`;
+        } else if (isUnlocked) {
+          btnHtml = `<button class="reward-btn can-claim" onclick="claimReward(${r.id})">點擊兌換</button>`;
+        }
+
+        item.innerHTML = `
+          <div class="reward-info">
+            <span class="reward-icon">${r.icon}</span>
+            <span>${r.name}</span>
+          </div>
+          ${btnHtml}
+        `;
+        listEl.appendChild(item);
+      });
+
+      save();
+    }
+
+    function addPoints(val) {
+      points = Math.round((points + val) * 10) / 10;
+      render();
+    }
+
+    function claimReward(id) {
+      const reward = rewards.find(r => r.id === id);
+      if (reward && points >= reward.req) {
+        reward.claimed = true;
+        alert(`🎉 成功兌換：${reward.name}！`);
+        render();
+      }
+    }
+
+    function resetProgress() {
+      if (confirm('確定要重置所有溫書進度嗎？')) {
+        points = 0;
+        rewards.forEach(r => r.claimed = false);
+        localStorage.removeItem('pooh_points');
+        localStorage.removeItem('pooh_rewards');
+        render();
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
